@@ -2,10 +2,6 @@
 
 - 增加了特征提取
 
-  
-
-
-
 ------------------- Update Date: 2023-06-25 -------------------
 
 - 增加了过滤imudata堆积问题
@@ -19,7 +15,7 @@
 
 ------------------- Update Date: 2023-06-17 -------------------
 
-- liorf-main0617 程序卡死是GTSAM版本原因，20.04下 4.0.0.alpha2可以
+- liorf 程序卡死是GTSAM版本原因，20.04下 4.0.2可以
 - 测试了稳定融合GPS的参数gpsDistanceFrequency和Conv
 - TODO：发布GpswithHeading话题 根据GPSodom或融合odom解算航向角
   - getgpsdata_with_whole_imu
