@@ -1,0 +1,18 @@
+{
+  "configurations": [
+    {
+      "browse": {
+        "databaseFilename": "",
+        "limitSymbolsToIncludedHeaders": true
+      },
+      "includePath": [
+        "/home/si/6t_localization_code/devel_isolated/vertical_wall_grid_msg/include/**",
+        "/home/si/6t_localization_code/install_isolated/include/**",
+        "/opt/ros/kinetic/include/**",
+        "/usr/include/**"
+      ],
+      "name": "ROS"
+    }
+  ],
+  "version": 4
+}

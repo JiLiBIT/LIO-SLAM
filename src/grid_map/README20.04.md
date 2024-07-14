@@ -1,0 +1,1 @@
+***grid_map_pcl*** provides conversions of grid maps from Point Cloud Library ([PCL](http://pointclouds.org/)) polygon meshes and point clouds. For details, see the grid map pcl package [README](grid_map_pcl/README.md).

@@ -1,0 +1,57 @@
+imu数据
+节点 “imudata” 
+类型：sensor_msgs::Imu
+包含内容 ：三个方向加速度、角速度
+
+发送端代码
+      sensor_msgs::Imu imuout;
+      tf::quaternionTFToMsg(orientation,imuout.orientation);
+      imuout.header.stamp = ros::Time::now();
+      imuout.header.frame_id="imu_frame";
+      imuout.linear_acceleration.x = ins_data.dAccz;
+      imuout.linear_acceleration.y = ins_data.dAccx;
+      imuout.linear_acceleration.z = ins_data.dAccy;
+
+      imuout.angular_velocity.x = ins_data.dArz*M_PI/180;
+      imuout.angular_velocity.y = ins_data.dArx*M_PI/180;
+      imuout.angular_velocity.z = ins_data.dAry*M_PI/180;
+      
+ecu数据
+节点 “ecudata”
+类型：sensor sensor_driver_msgs::ECUData
+发送内容：车辆底层信息
+
+    sensor_driver_msgs::ECUData ecumsg;
+    ecumsg.header.stamp=ros::Time::now();
+    ecumsg.fDeForwardVel=ecu_data.fDeForwardVel;
+    ecumsg.fFLRWheelAverAngle=ecu_data.fFLRWheelAverAngle;//前轮偏角，需注意没有固定零位，每次上电时的转角为零位，左转为正，右为负
+    ecumsg.fForwardVel=ecu_data.fForwardVel; //车速
+
+    ecumsg.petral_pressure=ecu_data.petral_pressure;
+    ecumsg.pressure_back=ecu_data.pressure_back;
+    ecumsg.FrontLeftWheelSpeed=ecu_data.FrontLeftWheelSpeed;
+    ecumsg.FrontRightWheelSpeed=ecu_data.FrontRightWheelSpeed;
+    ecumsg.BackLeftWheelSpeed=ecu_data.BackLeftWheelSpeed;//1
+    ecumsg.BackRightWheelSpeed=ecu_data.BackRightWheelSpeed;
+    
+惯导速度信息
+节点 “insvelocity”
+类型：sensor sensor_driver_msgs::InsVelocity
+发送内容：惯导速度及角速度 （车体坐标系下，右x，前y，上z）
+发送部分代码
+	sensor_driver_msgs::InsVelocity insvelocity;
+	insvelocity.header.frame_id = "ins_frame";
+	insvelocity.header.stamp = imuout.header.stamp;
+	insvelocity.angular_velocity = imuout.angular_velocity;
+	Eigen::Vector3d globalvelocity;
+	globalvelocity.x() = ins_data.dVelE;
+	globalvelocity.y() = ins_data.dVelN;
+	globalvelocity.z() = ins_data.dVelSky;
+
+	auto inspose = transform::RollPitchYaw(roll, pitch, heading);
+	Eigen::Vector3d velocity = inspose.inverse()*globalvelocity;
+	insvelocity.linear_velocity.x = velocity.x();
+	insvelocity.linear_velocity.y = velocity.y();
+	insvelocity.linear_velocity.z = velocity.z();
+	if(velocity.norm()<100)
+		pubInsVelocity.publish(insvelocity);
