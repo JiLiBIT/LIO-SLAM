@@ -1,39 +1,3 @@
-------------------- Update Date: 2023-06-28 -------------------
-
-- 增加了特征提取
-
-------------------- Update Date: 2023-06-25 -------------------
-
-- 增加了过滤imudata堆积问题
-
-
-------------------- Update Date: 2023-06-25 -------------------
-
-- 增加了/liorf/gpsdata解算航向角
-- TODO: ENU2wgs84准确性验证
-- 
-
-------------------- Update Date: 2023-06-17 -------------------
-
-- liorf 程序卡死是GTSAM版本原因，20.04下 4.0.2可以
-- 测试了稳定融合GPS的参数gpsDistanceFrequency和Conv
-- TODO：发布GpswithHeading话题 根据GPSodom或融合odom解算航向角
-  - getgpsdata_with_whole_imu
-  - GPSpub
-
-- TODO：sensor_sufsion 应对卫星中断后重启的
-
-------------------- Update Date: 2023-05-30 -------------------
-
-- liorf-main0530 融合GPS
-- imutype=1(9轴)解决初始化问题
-- 修改了ImuPreintergation dt = 0 解决丢帧问题
-- GTSAM https://github.com/TixiaoShan/LIO-SAM/issues/165 版本问题 4.0.2可能可以
-
-------------------- Update Date: 2023-05-18 -------------------
-
-- 这个版本的liorf-main0518是融合GPS前的版本
-- 
 
 # LIO-SAM
 
@@ -107,10 +71,11 @@ This is the original ROS1 implementation of LIO-SAM. For a ROS2 implementation s
   ```
   
 - pcl_ros
-
+```
   sudo apt-get install ros-noetic-pcl-ros
+```
 
-- boost 1.71.0 一般默认就可以
+- boost 1.71.0 默认就可以
 
 https://blog.csdn.net/chen411120086/article/details/122618226
 
@@ -119,15 +84,14 @@ https://blog.csdn.net/chen411120086/article/details/122618226
 Use the following commands to download and compile the package
 
 ```
-
-
 catkin_make -DPYTHON_EXECUTABLE=/usr/bin/python3 -DCATKIN_WHITELIST_PACKAGES='sensor_driver_msgs' -DCMAKE_BUILD_TYPE=Release
 catkin_make -DPYTHON_EXECUTABLE=/usr/bin/python3 -DCATKIN_WHITELIST_PACKAGES='rs_to_velodyne' -DCMAKE_BUILD_TYPE=Release
 catkin_make -DPYTHON_EXECUTABLE=/usr/bin/python3 -DCATKIN_WHITELIST_PACKAGES='liorf' -DCMAKE_BUILD_TYPE=Release
 catkin_make -DPYTHON_EXECUTABLE=/usr/bin/python3 -DCATKIN_WHITELIST_PACKAGES='' -DCMAKE_BUILD_TYPE=Release
+```
+if using grid_map:
 
-
-if grid_map:
+```
 sudo apt-get install ros-noetic-octomap*
 sudo apt-get install libtbb-dev
 
@@ -137,23 +101,16 @@ catkin_make -DPYTHON_EXECUTABLE=/usr/bin/python3 -DCATKIN_WHITELIST_PACKAGES='' 
 ## Run the package
 
 1. Run the launch file:
-
-   
-
-  ```
-  
+```bash
   rosrun rs_to_velodyne rs_to_velodyne XYZI XYZIR 
   roslaunch liorf run_lio_sam_6t.launch
-  ```
+```
 
 2. Play existing bag files:
 
-
-
-  ```
+```
   rosbag play slope02_01.bag slope02_03.bag
-  
-  ```
+```
 
 3. save map, odom and gps
 
@@ -165,12 +122,11 @@ catkin_make -DPYTHON_EXECUTABLE=/usr/bin/python3 -DCATKIN_WHITELIST_PACKAGES='' 
 
    rostopic /liorf/mapping/map_4planning
 
-   ```
-   MapServer:
+   MapServer: (保存路径会被全部重写)
    rosservice call /liorf/save_map 0.2 "/Downloads/PCD/Huailai/20230505/Driving01/wo/"
    
-   4mapping:
-   rosbag record -O odom_LIO /liorf/mapping/odometry /lidar_cloud_calibrated
+   odometry:
+   rosbag record -O odom_LIO /liorf/mapping/odometry
    
    pcl:
    rosbag record -O PCL /liorf/mapping/cloud_registered /liorf/mapping/map_local /lidar_cloud_calibrated /liorf/mapping/map_4planning
@@ -191,13 +147,15 @@ catkin_make -DPYTHON_EXECUTABLE=/usr/bin/python3 -DCATKIN_WHITELIST_PACKAGES='' 
    
    gird_map:
    rosbag record -O gridmap /grid_map_from_raw_pointcloud
-   ```
 
-4. grid map
+4. to run pcl_to_grid map node:
 
-sub_topic:  "liorf/mapping/map_4planning"
+sub_pointcloud_topic:  "liorf/mapping/map_4planning"
 
-`roslaunch grid_map_pcl grid_map_pcl_loader_node.launch` 
+```bash
+roslaunch grid_map_pcl grid_map_pcl_loader_node.launch
+```
+
 
 ## Test
 
